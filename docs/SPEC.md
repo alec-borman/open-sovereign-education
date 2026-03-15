@@ -355,6 +355,225 @@ This section documents how the community has addressed concerns raised during th
 - Decisions by 2/3 supermajority
 - Focus: budget approval, ethical framework updates, dispute resolution
 
+
+## Amending the Specification: Addressing the Oracle Problem and Incentive Gap
+
+The following sections should be integrated into the existing SPEC.md file. I'll present them as additions to the relevant parts.
+
+---
+
+### Addition to Part VII: Governance & Ethical Design
+
+#### Section 7.5: The Trust Layer — Solving the Oracle Problem
+
+Decentralized identity without a trust framework is just cryptography without confidence. P3820/OS addresses the "who verifies the verifiers" problem through a **layered attestation model** that does not require a centralized registrar.
+
+##### 7.5.1 Trust Establishment Through Transparency, Not Authority
+
+The protocol rejects the notion of a single root of trust. Instead, it establishes trust through **verifiable metadata about issuers**, enabling relying parties (universities, employers, other nations) to make their own trust decisions based on transparent criteria.
+
+| Layer | Mechanism | Trust Basis |
+|-------|-----------|-------------|
+| **1. Issuer Self-Declaration** | DID Document includes `assertionMethod` and `service` endpoints with published accreditation claims | Transparency; anyone can inspect claims |
+| **2. Attestation by Known Entities** | Existing trusted institutions (ministries, universities) issue Verifiable Credentials *about* issuers | Delegated trust; transitive |
+| **3. Transparency Logs** | All issuer metadata and credentials anchored to public append-only logs (e.g., blockchain or Certificate Transparency-style logs) | Auditability; detection of fraud |
+| **4. Reputation Networks** | Accumulated verification outcomes shared via trusted data exchange protocols | Statistical trust; community validation |
+
+##### 7.5.2 The Issuer Accreditation Credential (IAC)
+
+Any entity may issue an **Issuer Accreditation Credential** to another entity. This credential asserts that the issuer meets certain standards (e.g., "accredited by the Kenyan Ministry of Education to issue Secondary School credentials"). The IAC itself is a Verifiable Credential, creating chains of attestation.
+
+**Example Trust Chain:**
+```
+University of Tokyo (trust anchor) 
+    └─ accredits → Japanese Ministry of Education (IAC)
+        └─ accredits → Kenya Ministry of Education (IAC)
+            └─ accredits → Turkana Regional Education Council (IAC)
+                └─ issues → "Advanced Calculus" credential to student
+```
+
+The University of Tokyo need not trust the Turkana Council directly. It trusts its own ministry, which trusts Kenya's ministry, which trusts the regional council. The chain is fully verifiable via DID resolution.
+
+##### 7.5.3 Trust Registries (Optional, Jurisdiction-Specific)
+
+Nations or consortiums may maintain **trust registries**—lists of approved issuers for specific purposes. These are **not global** but local to jurisdictions. A Japanese university may maintain a registry of foreign education ministries it recognizes. A Brazilian indigenous council may maintain a registry of community elders authorized to issue apprenticeship credentials.
+
+The protocol defines a standard format for trust registries (JSON-LD with DID references) but does not mandate their existence or content.
+
+##### 7.5.4 The "Advanced Calculus" Problem Solved
+
+A university in Tokyo evaluating a credential from a remote Kenyan council would:
+
+1. Resolve the credential's issuer DID to obtain its DID Document and any attached IACs
+2. Follow the chain of IACs until reaching an issuer the university explicitly trusts (e.g., Japanese Ministry of Education)
+3. Verify each signature along the chain
+4. Optionally check if the credential's competency claims (CASE GUIDs) align with the university's own curriculum mappings
+
+If the chain terminates at an unknown issuer, the university may:
+- Reject the credential
+- Accept it with probationary conditions
+- Query community reputation networks for additional context
+
+The protocol enables all options; it prescribes none.
+
+---
+
+### Addition to Part VI: Economic Model
+
+#### Section 6.3: Proof of Contribution — Incentivizing the Commons
+
+The Incentive Gap is real: open protocols eliminate rent-seeking, but rent-seeking is what funds adoption. P3820/OS addresses this through a **Proof of Contribution mechanism** that aligns self-interest with collective good.
+
+##### 6.3.1 Contribution Types
+
+Contributions to the commons are quantified and recognized:
+
+| Contribution Type | Measurement Unit | Verification Method |
+|-------------------|------------------|---------------------|
+| **Curriculum Modules** | CASE-compliant learning objectives | Peer review by Technical Steering Group |
+| **Translation Packs** | Language coverage percentage | Community validation + usage metrics |
+| **MLL Reference Implementations** | Production-ready code | Technical audit + test suite passing |
+| **AI Models** | Certified, transparent models | Local certification + published transparency report |
+| **Teacher Training Materials** | Open educational resources | Peer review + adoption metrics |
+| **Bug Reports/Security Audits** | Verified vulnerabilities | Responsible disclosure process |
+
+##### 6.3.2 Contribution Credits
+
+Each verified contribution earns the contributing nation or organization **Contribution Credits**. Credits are:
+
+- **Non-transferable** (to prevent gaming)
+- **Expiring after 5 years** (to incentivize ongoing participation)
+- **Publicly visible** in a transparency log
+
+##### 6.3.3 Credit Redemption: Upstream Contribution Discounts
+
+Nations may redeem Contribution Credits to reduce their annual Upstream Maintenance Fund obligation:
+
+| Contribution Volume | Maximum Discount |
+|---------------------|------------------|
+| Baseline (0 credits) | 0% |
+| Active Contributor | Up to 25% |
+| Major Contributor | Up to 50% |
+| Core Maintainer | Up to 75% |
+
+Discounts are applied progressively. A nation contributing significant curriculum and translations could reduce its financial obligation substantially while still maintaining governance weight (governance is tied to GDP tier, not contribution credits, preventing "buying votes").
+
+##### 6.3.4 Credit Redemption: Enhanced Access to the Commons
+
+Credits may also unlock enhanced services from the commons:
+
+| Service | Credit Cost |
+|---------|-------------|
+| **Priority Curriculum Alignment Requests** | 10 credits |
+| **Automated Translation Assistance (AI-enhanced)** | 25 credits per language |
+| **Dedicated Technical Integration Support** | 50 credits per engagement |
+| **Seat on Technical Steering Group working groups** | 100 credits (non-voting observer) |
+
+##### 6.3.5 The Case Exchange Marketplace
+
+The CASE Curriculum Exchange evolves into a **limited marketplace** where:
+
+- All shared curriculum is freely available (core principle maintained)
+- Contributors receive **discoverability preference** in search results
+- Highly-rated contributions (by community vote) earn bonus credits
+- Nations may request custom curriculum alignments, paying in credits or currency
+
+##### 6.3.6 Preventing Gaming and Rent-Seeking
+
+To prevent the system from being gamed:
+
+1. **Peer Review:** All contributions must be reviewed by at least two independent members of the Technical Steering Group or Stewardship Council
+2. **Usage Requirements:** Curriculum modules must demonstrate actual adoption (minimum 3 schools, 6 months) before earning full credit
+3. **Audit Trails:** All credit grants and redemptions are logged in an immutable transparency log
+4. **Credit Caps:** No single nation may earn more than 50% of total annual credits, preventing dominance
+5. **Public Attribution:** All contributions are publicly attributed, creating reputational incentives beyond credits
+
+---
+
+### Updated Part VI: Economic Model (Revised Section)
+
+Replace the existing Part VI with this expanded version:
+
+---
+
+## Part VI: Economic Model
+
+### Two-Layer Funding with Contribution Incentives
+
+#### 6.1 Upstream Maintenance Fund (Global, Shared)
+Maintains protocol-core, reference MLLs, security audits, and trust infrastructure.
+
+| GDP Tier (Per Capita) | Base Annual Contribution per Student | Maximum Discount (via Credits) | Effective Minimum |
+|-----------------------|--------------------------------------|-------------------------------|-------------------|
+| Low (<$2,000) | $0.00 – $0.20 | N/A (floor) | $0.00 |
+| Lower-Middle ($2k–5k) | $0.40 – $1.00 | 25% | $0.30 – $0.75 |
+| Upper-Middle ($5k–15k) | $1.20 – $3.00 | 50% | $0.60 – $1.50 |
+| High (>$15k) | $3.20 – $10.00 | 75% | $0.80 – $2.50 |
+
+#### 6.2 Transformation Budget (National, Local)
+Funds teacher training, hardware, localization, curriculum development.
+*Expected ratio: 5× upstream contribution (after discounts).*
+
+#### 6.3 Proof of Contribution Mechanism
+
+##### 6.3.1 Contribution Types and Credit Values
+
+| Contribution Type | Base Credits | Multipliers |
+|-------------------|---------------|-------------|
+| **Curriculum Module** (per 100 CASE objectives) | 10 | +2× if high adoption; +3× if multilingual |
+| **Translation Pack** (per language, 90%+ coverage) | 15 | +2× for indigenous/low-resource languages |
+| **MLL Reference Implementation** | 50 | +2× if includes teacher-in-the-loop patterns |
+| **Certified AI Model** (with transparency report) | 30 | +2× if outperforms baseline on fairness metrics |
+| **Teacher Training OER** (per module) | 5 | +2× if evidence of effectiveness |
+| **Critical Security Audit** | 25–100 | Severity-based |
+
+##### 6.3.2 Credit Redemption Options
+
+- **Discounts on Upstream Contributions** (as above)
+- **Enhanced Commons Access** (priority support, automated translation)
+- **Technical Working Group Participation** (observer status)
+
+##### 6.3.3 Governance Protections
+
+- Credits do **not** affect governance voting weight (preserves one-nation-one-vote principle in Stewardship Council)
+- Credit caps prevent any single nation from dominating
+- All transactions publicly auditable
+
+#### 6.4 Sustainability Principle
+
+No donor or corporate sponsor gains algorithmic influence. Governance remains under multi-stakeholder control. The Contribution Credit system aligns self-interest with collective good, creating a **virtuous cycle**: contributions reduce costs while improving the commons for all.
+
+---
+
+### Addition to Annex B: Resolution of Outstanding Issues
+
+Add these new entries:
+
+---
+
+### Issue #7: "The Oracle Problem" — Who Verifies the Verifiers?
+
+**Resolution:** Implemented **Layered Attestation Model** (Section 7.5). Trust is established through verifiable chains of Issuer Accreditation Credentials, not a centralized registrar. Relying parties (universities, employers) make their own trust decisions based on transparent issuer metadata and optional jurisdiction-specific trust registries. The protocol provides the cryptographic and data format infrastructure; it does not prescribe a single root of trust.
+
+### Issue #8: "The Incentive Gap" — Why Contribute to the Commons?
+
+**Resolution:** Implemented **Proof of Contribution mechanism** (Section 6.3). Nations and organizations earn Contribution Credits for validated contributions (curriculum, translations, code, models). Credits redeem for discounts on upstream financial obligations and enhanced access to commons services. This creates a virtuous cycle where contribution reduces cost while improving the commons for all. Governance weight remains tied to GDP tier, preventing "buying influence."
+
+---
+
+## Conclusion
+
+These additions transform P3820/OS from a technically elegant protocol into a **socio-technical system** that accounts for human behavior, institutional trust, and collective action problems.
+
+The Oracle problem is solved not by centralization but by **transparency plus choice**—relying parties can follow trust chains back to anchors they already trust, without requiring a global authority.
+
+The Incentive gap is solved not by charity but by **enlightened self-interest**—contributing to the commons directly reduces costs and improves outcomes for contributors, while the cap and governance protections prevent capture.
+
+The protocol is now not only sovereign and adaptive, but also **self-reinforcing**. Every contribution makes the system more valuable, which attracts more contributors, which further reduces costs. This is the flywheel that open protocols need to survive.
+
+---
+
+
 ### How to Contribute
 
 We welcome contributions in several forms:
